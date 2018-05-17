@@ -115,11 +115,14 @@ namespace ContosoUniversity.Controllers
         }
 
         // GET: Student/Delete/5
-        public ActionResult Delete(int? id)
+        public ActionResult Delete(int? id, bool? saveChangesError=false)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            if(saveChangesError.GetValueOrDefault()){
+                ViewBag.ErrorMessage = "删除失败，再试一次，如果问题仍然存在，请反映给系统管理员。";
             }
             Student student = db.Students.Find(id);
             if (student == null)
@@ -130,13 +133,21 @@ namespace ContosoUniversity.Controllers
         }
 
         // POST: Student/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public ActionResult Delete(int id)
         {
-            Student student = db.Students.Find(id);
-            db.Students.Remove(student);
-            db.SaveChanges();
+            try {
+                Student student = db.Students.Find(id);
+                db.Students.Remove(student);
+                db.SaveChanges();
+            }
+            catch (DataException/* dex */) {
+                //删除异常时，向用户提供机会取消或重试。
+                //Log the error (uncomment dex variable name and add a line here to write a log.
+                return RedirectToAction("Delete", new { id, saveChangesError = true });
+            }
+            
             return RedirectToAction("Index");
         }
 
