@@ -46,15 +46,26 @@ namespace ContosoUniversity.Controllers
         // 为了防止“过多发布”攻击，请启用要绑定到的特定属性，有关 
         // 详细信息，请参阅 https://go.microsoft.com/fwlink/?LinkId=317598。
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,LastName,FirstMidName,EnrollmentDate")] Student student)
+        [ValidateAntiForgeryToken]//安全警告-ValidateAntiForgeryToken属性有助于防止跨站点请求伪造攻击。
+        public ActionResult Create([Bind(Include = "LastName,FirstMidName,EnrollmentDate")] Student student)
+        //Bind属性是一种方法，以防止过度发布中创建的方案。
+        //它是使用的安全最佳实践Include参数Bind属性设为允许列表字段。 还有可能要使用Exclude参数阻止列表你想要排除的字段。 原因Include更安全是，当将新属性添加到实体，新的字段不会自动受Exclude列表。
         {
-            if (ModelState.IsValid)
+            try
             {
-                db.Students.Add(student);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if (ModelState.IsValid)
+                {
+                    db.Students.Add(student);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
             }
+            catch(DataException /* dex */)
+            {
+                //Log the error (uncomment dex variable name and add a line here to write a log.
+                ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
+            }
+
 
             return View(student);
         }

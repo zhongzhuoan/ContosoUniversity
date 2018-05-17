@@ -7,10 +7,10 @@
 <h2>添加</h2>
 
 
-@using (Html.BeginForm()) 
+@using (Html.BeginForm())
 {
-    @Html.AntiForgeryToken()
-    
+    @Html.AntiForgeryToken()@*其工作方式与ValidateAntiForgeryToken属性中的控制器，以帮助防止跨站点请求伪造攻击。*@
+
     <div class="form-horizontal">
         <h4>学生信息</h4>
         <hr />
