@@ -151,6 +151,7 @@ namespace ContosoUniversity.Controllers
             return RedirectToAction("Index");
         }
 
+        //关闭数据库连接，并释放持有的资源
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -159,5 +160,10 @@ namespace ContosoUniversity.Controllers
             }
             base.Dispose(disposing);
         }
+
+        //处理事务
+        //默认情况下，实体框架隐式实现事务。 
+        //在方案中，对多个行或表进行更改，然后调用SaveChanges，实体框架自动可确保所有所做的更改成功或所有失败。 
+        //如果完成某些更改后发生错误，这些更改会自动回退。
     }
 }
