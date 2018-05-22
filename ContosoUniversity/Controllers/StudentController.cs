@@ -16,9 +16,34 @@ namespace ContosoUniversity.Controllers
         private SchoolContext db = new SchoolContext();
 
         // GET: Student
-        public ActionResult Index()
+        //sortOrder: 添加按条件升降排序功能
+        public ActionResult Index(string sortOrder)
         {
-            return View(db.Students.ToList());
+            //保存参数给html使用，html点击时改变
+            ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewBag.DateSortParm = sortOrder == "Date" ? "date_desc" : "Date";
+            //从数据库学生表中获取所有学生
+            var students = from s in db.Students
+                           select s;
+            switch (sortOrder) {
+                case "name_desc":
+                    //按照姓氏降序
+                    students = students.OrderByDescending(s => s.LastName);
+                    break;
+                case "date_desc":
+                    //按登记注册日期降序
+                    students = students.OrderByDescending(s => s.EnrollmentDate);
+                    break;
+                case "Date":
+                    //按日期升序
+                    students = students.OrderBy(s => s.EnrollmentDate);
+                    break;
+                default:
+                    //按姓氏升序
+                    students = students.OrderBy(s => s.LastName);
+                    break;
+            }
+            return View(students.ToList());
         }
 
         // GET: Student/Details/5
