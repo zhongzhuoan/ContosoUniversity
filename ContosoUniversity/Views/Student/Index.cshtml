@@ -9,6 +9,14 @@
 <p>
     @Html.ActionLink("添加", "Create")
 </p>
+@*添加文本搜索框*@
+@using (Html.BeginForm()) {
+    <p>
+        根据名字搜索: @Html.TextBox("SearchString")
+        <input type="submit" value="Search"/>
+    </p>
+}
+
 <table class="table">
     <tr>
         <th>

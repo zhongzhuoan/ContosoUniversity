@@ -17,7 +17,8 @@ namespace ContosoUniversity.Controllers
 
         // GET: Student
         //sortOrder: 添加按条件升降排序功能
-        public ActionResult Index(string sortOrder)
+        //searchString: 添加按文本搜索功能
+        public ActionResult Index(string sortOrder, string searchString)
         {
             //保存参数给html使用，html点击时改变
             ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -25,6 +26,11 @@ namespace ContosoUniversity.Controllers
             //从数据库学生表中获取所有学生
             var students = from s in db.Students
                            select s;
+            //搜索文本不为空，返回包含该文本的学生名字的信息
+            if (!String.IsNullOrEmpty(searchString)) {
+                students = students.Where(s => s.FirstMidName.Contains(searchString)
+                                            || s.LastName.Contains(searchString));
+            }
             switch (sortOrder) {
                 case "name_desc":
                     //按照姓氏降序
