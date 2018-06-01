@@ -1,53 +1,68 @@
-﻿@model IEnumerable<ContosoUniversity.Models.Student>
+﻿@* 替换成PagedList.Mvc包，指定视图获取PagedList对象 *@
+@model PagedList.IPagedList<ContosoUniversity.Models.Student>
+@* 分页按钮 *@
+@using PagedList.Mvc
 
 @{
-    ViewBag.Title = "索引";
+    ViewBag.Title = "学生列表";
 }
 
-<h2>索引</h2>
+<h2>学生列表</h2>
 
 <p>
     @Html.ActionLink("添加", "Create")
 </p>
-@*添加文本搜索框*@
-@using (Html.BeginForm()) {
+@* 添加文本搜索框，BeginForm默认使用post提交表单，使用get时数据是通过url传输，使得用户能够使用该url来创建书签 *@
+@using (Html.BeginForm("Index", "Student", FormMethod.Get))
+{
     <p>
-        根据名字搜索: @Html.TextBox("SearchString")
-        <input type="submit" value="Search"/>
+        @* 使用当前过滤值为文本框初始值 *@
+        查找姓名: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+        <input type="submit" value="搜索" />
     </p>
 }
 
 <table class="table">
     <tr>
         <th>
-            @Html.ActionLink("Last Name", "Index", new { sortOrder = ViewBag.NameSortParm })
+            @* 添加当前过滤值，根据过滤后的值排序 *@
+            @Html.ActionLink("姓", "Index", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.FirstMidName)
+            名字
         </th>
         <th>
-            @Html.ActionLink("Enrollment Date", "Index", new { sortOrder = ViewBag.DateSortParm })
+            @* 添加当前过滤值，根据过滤后的值排序 *@
+            @Html.ActionLink("注册日期", "Index", new { sortOrder = ViewBag.DateSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.LastName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.FirstMidName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.EnrollmentDate)
-        </td>
-        <td>
-            @Html.ActionLink("修改", "Edit", new { id=item.ID }) |
-            @Html.ActionLink("详情", "Details", new { id=item.ID }) |
-            @Html.ActionLink("删除", "Delete", new { id=item.ID })
-        </td>
-    </tr>
-}
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FirstMidName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EnrollmentDate)
+            </td>
+            <td>
+                @Html.ActionLink("修改", "Edit", new { id = item.ID }) |
+                @Html.ActionLink("详情", "Details", new { id = item.ID }) |
+                @Html.ActionLink("删除", "Delete", new { id = item.ID })
+            </td>
+        </tr>
+    }
 
 </table>
+<br />
+@* 添加当前页数 *@
+第@(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber)页&nbsp;&nbsp;&nbsp;&nbsp;总共@(Model.PageCount)页
+
+@* 添加分页按钮 *@
+@Html.PagedListPager(Model, page => Url.Action("Index",
+    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))

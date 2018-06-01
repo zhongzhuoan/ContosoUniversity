@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using ContosoUniversity.DAL;
 using ContosoUniversity.Models;
+using PagedList;
 
 namespace ContosoUniversity.Controllers
 {
@@ -17,12 +18,30 @@ namespace ContosoUniversity.Controllers
 
         // GET: Student
         //sortOrder: 添加按条件升降排序功能
+        //currentFilter: 添加当前过滤器，用于记录上次搜索的文本
         //searchString: 添加按文本搜索功能
-        public ActionResult Index(string sortOrder, string searchString)
+        //page: 添加页数
+        public ViewResult Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
+            //记录当前排序并用于显示在html上
+            ViewBag.CurrentSort = sortOrder;
             //保存参数给html使用，html点击时改变
             ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewBag.DateSortParm = sortOrder == "Date" ? "date_desc" : "Date";
+
+            //搜索文本是否不为空
+            if (searchString != null)
+            {
+                //不为空时，重置页面为1
+                page = 1;
+            }
+            else {
+                //为空时，沿用上一次标识
+                searchString = currentFilter;
+            }
+            //记录当前过滤标识，添加到html上
+            ViewBag.CurrentFilter = searchString;
+
             //从数据库学生表中获取所有学生
             var students = from s in db.Students
                            select s;
@@ -49,7 +68,13 @@ namespace ContosoUniversity.Controllers
                     students = students.OrderBy(s => s.LastName);
                     break;
             }
-            return View(students.ToList());
+
+            //每页显示的记录数，当前为每页显示3条数据
+            int pageSize = 3;
+            //当前页数，page非空时使用page，为空时使用默认值1
+            int pageNumber = (page ?? 1);
+            //使用 PagedList.Mvc包的分页功能
+            return View(students.ToPagedList(pageNumber, pageSize));
         }
 
         // GET: Student/Details/5
