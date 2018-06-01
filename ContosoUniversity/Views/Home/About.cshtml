@@ -1,7 +1,31 @@
-﻿@{
-    ViewBag.Title = "关于";
-}
-<h2>@ViewBag.Title</h2>
-<h3>@ViewBag.Message</h3>
+﻿@model IEnumerable<ContosoUniversity.ViewModels.EnrollmentDateGroup>
 
-<p>使用此区域提供附加信息。</p>
+@{ 
+    ViewBag.Title = "学生分组统计";
+}
+
+<h2>学生分组统计</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            注册日期
+        </th>
+        <th>
+            学生个数
+        </th>
+    </tr>
+
+@foreach (var item in Model)
+{
+    <tr>
+        <td>
+            @* 添加 Html.DisplayFor 配合 [DataType(DataType.Date)] 后只显示日期不显示时分秒 *@
+            @Html.DisplayFor(modelItem => item.EnrollmentDate)
+        </td>
+        <td>
+            @item.StudentCount
+        </td>
+    </tr>
+}
+</table>

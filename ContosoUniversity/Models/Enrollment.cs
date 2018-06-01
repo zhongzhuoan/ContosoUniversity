@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace ContosoUniversity.Models
+﻿namespace ContosoUniversity.Models
 {
     //等级枚举类
     public enum Grade

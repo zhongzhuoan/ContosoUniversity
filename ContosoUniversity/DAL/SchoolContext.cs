@@ -1,10 +1,6 @@
 ﻿using ContosoUniversity.Models;
-using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
-using System.Linq;
-using System.Web;
 
 //新文件夹命名DAL （适用于数据访问层）
 namespace ContosoUniversity.DAL
